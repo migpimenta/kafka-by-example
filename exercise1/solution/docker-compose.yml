@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  kafka:
+    extends:
+      file: ../../common/docker-compose.yml
+      service: kafka
+
+
