@@ -1,5 +1,13 @@
 # Exercise 1
 
+```
+docker-compose up --build --force-recreate
+```
+
+
+
+
+
 This exercise demonstrates how to spin up a Kafka cluster using the shared configuration in `common/docker-compose.yml`.
 
 - The `starter` and `solution` folders each contain a `docker-compose.yml` that extends the base compose file from `../common/docker-compose.yml`.
