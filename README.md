@@ -1,6 +1,6 @@
 # Kafka by Example
 
-Learning Kafka through practical exercises gives you a deep understanding of how it behaves in real‑world scenarios. Below are 10 progressively challenging exercises that build your skills—from basic setup to simulating outages and tuning performance.
+Learning Kafka through practical exercises gives you a deep understanding of how it behaves in real‑world scenarios. Below are 6 progressively challenging exercises that build your skills—from basic operations to production‑ready configurations and failure scenarios.
 
 > Each exercise has:
 > - a `starter/` folder: implement your solution here following that exercise's `README.md` instructions.
@@ -11,45 +11,89 @@ Learning Kafka through practical exercises gives you a deep understanding of how
 ---
 ## Exercise Roadmap
 
-### 1. Create and Inspect a Topic
-Goal: Use CLI tools to create a topic and inspect its configuration.  
-Learn: Partitions, replication factor, topic metadata.
+### 1. Kafka Fundamentals: Topics, Producers, and Consumers
+**Goal:** Master the basics by creating topics, producing messages via CLI, and consuming them with different configurations.
 
-### 2. Produce and Consume Messages
-Goal: Use `kafka-console-producer` and `kafka-console-consumer` to send and read messages.  
-Learn: Message flow, offsets, consumer groups.
+**What you'll do:**
+- Create topics with varying partition counts and inspect their metadata
+- Use `kafka-console-producer` to send messages with and without keys
+- Consume messages from different offsets (beginning, latest, specific offset)
+- Experiment with consumer groups to understand partition assignment
 
-### 3. Write a Simple Producer and Consumer in Code
-Goal: Build a basic Kafka producer and consumer (Java, Python, etc.).  
-Learn: Client APIs, serialization, poll loop, configuration basics.
+**Learn:** Topic architecture, partitions, replication factor, message keys, offsets, consumer group coordination, partition-to-consumer mapping.
 
-### 4. Simulate Consumer Lag
-Goal: Artificially slow down processing (sleep/delay) to observe lag.  
-Learn: Lag metrics, offset tracking, group behavior.
+---
 
-### 5. Simulate Broker Unavailability
-Goal: Stop the Kafka container temporarily and observe producer/consumer reactions.  
-Learn: Retries, timeouts, error handling strategies.
+### 2. Building Production-Grade Clients
+**Goal:** Implement robust producer and consumer applications with proper configuration, error handling, and monitoring.
 
-### 6. Tune Producer Configs for Reliability
-Goal: Experiment with `acks`, `retries`, `delivery.timeout.ms`, batching, compression.  
-Learn: Durability vs latency trade‑offs, idempotence.
+**What you'll do:**
+- Write a producer application (Java/Python/Go) that sends structured data with configurable serialization (JSON, Avro, or Protobuf)
+- Configure producer reliability settings: `acks`, `retries`, `idempotence`, batching, and compression
+- Build a consumer application with proper poll loops, commit strategies (auto vs manual), and graceful shutdown
+- Implement structured logging to track message processing and errors
 
-### 7. Explore Consumer Rebalancing
-Goal: Run multiple consumers in the same group and watch partition assignment changes.  
-Learn: Rebalancing, cooperative vs eager protocols, group coordination.
+**Learn:** Client APIs, serialization formats, producer durability vs throughput trade-offs, consumer commit semantics, application lifecycle management.
 
-### 8. Monitor Kafka with CLI and Logs
-Goal: Use `kafka-consumer-groups`, `kafka-topics`, and broker logs to monitor activity.  
-Learn: Lag tracking, group membership, topic health.
+---
 
-### 9. Simulate Message Loss or Duplication
-Goal: Interrupt consumers mid‑processing or disable `enable.auto.commit`.  
-Learn: At‑least‑once vs effectively‑once semantics, manual offsets.
+### 3. Monitoring and Observability
+**Goal:** Gain visibility into Kafka cluster and application health using CLI tools, logs, and key metrics.
 
-### 10. Stress Test with High Throughput
-Goal: Push high message volume and observe system behavior.  
-Learn: Throughput limits, batching efficiency, compression, backpressure.
+**What you'll do:**
+- Use `kafka-consumer-groups` to monitor consumer lag across partitions
+- Track producer and consumer metrics (throughput, latency, error rates)
+- Analyze broker logs to understand topic operations and client connections
+- Simulate consumer lag by adding processing delays and observe how it affects the system
+- Create a monitoring dashboard or script that reports cluster health
+
+**Learn:** Lag tracking, offset management, consumer group state, broker health indicators, performance bottlenecks identification.
+
+---
+
+### 4. Consumer Groups and Rebalancing
+**Goal:** Understand how Kafka coordinates multiple consumers and handles dynamic scaling through partition rebalancing.
+
+**What you'll do:**
+- Deploy multiple consumer instances in the same consumer group reading from a multi-partition topic
+- Observe partition assignment and workload distribution
+- Trigger rebalancing by adding/removing consumer instances
+- Compare eager vs cooperative rebalancing protocols
+- Implement rebalance listeners to handle partition assignment changes gracefully
+- Test scenarios: scaling up during high load, scaling down during low load
+
+**Learn:** Consumer group coordination, partition assignment strategies (range, round-robin, sticky), rebalance protocols, state management during rebalancing, minimizing rebalance downtime.
+
+---
+
+### 5. Fault Tolerance and Recovery
+**Goal:** Simulate real-world failures and implement strategies to maintain system reliability.
+
+**What you'll do:**
+- Stop the Kafka broker mid-operation and observe producer/consumer behavior
+- Configure producer timeouts and retry policies to handle transient failures
+- Test consumer recovery: interrupt processing mid-batch and verify offset handling
+- Implement idempotent producers to prevent duplicate messages
+- Experiment with `enable.auto.commit` vs manual offset commits to understand message delivery guarantees
+- Simulate message loss and duplication scenarios, then implement safeguards
+
+**Learn:** At-least-once vs at-most-once vs exactly-once semantics, producer retries and timeouts, consumer failure recovery, offset commit strategies, data loss prevention, handling duplicate messages.
+
+---
+
+### 6. Performance Tuning and High Throughput
+**Goal:** Optimize Kafka for high-volume workloads and understand the trade-offs between throughput, latency, and reliability.
+
+**What you'll do:**
+- Generate high message volume using a load testing tool or custom producer
+- Tune producer configs: batch size, linger time, compression (gzip, snappy, lz4, zstd)
+- Optimize consumer configs: fetch sizes, max poll records, processing parallelism
+- Monitor system behavior under load: CPU, memory, network, disk I/O
+- Test with different message sizes and identify throughput limits
+- Experiment with partitioning strategies to balance load
+- Document the performance characteristics and optimal configurations for different scenarios
+
+**Learn:** Throughput optimization, latency vs reliability trade-offs, compression effectiveness, batching strategies, backpressure handling, capacity planning, when to add more partitions or brokers.
 
 ---
 ## Project Structure
