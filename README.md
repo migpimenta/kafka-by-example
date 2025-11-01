@@ -6,7 +6,8 @@ Learning Kafka through practical exercises gives you a deep understanding of how
 > - a `starter/` folder: implement your solution here following that exercise's `README.md` instructions.
 > - a `solution/` folder: one possible reference solution (there can be others).
 >
-> Try to complete the starter before viewing the solution to maximize learning.
+
+Try to complete the starter before viewing the solution to maximize learning.
 
 ---
 ## Exercise Roadmap

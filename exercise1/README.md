@@ -1,23 +1,32 @@
-# Exercise 1
+# Exercise 1: Kafka Fundamentals: Topics, Producers, and Consumers
 
-This exercise demonstrates how to spin up a Kafka cluster using the shared configuration in `common/docker-compose.yml`.
+## Summary
 
-- The `starter` and `solution` folders each contain a `docker-compose.yml` that extends the base compose file from `../common/docker-compose.yml`.
-- For now, both simply start the same Kafka service as defined in the common configuration.
+**Goal:** Master the basics by creating topics, producing messages via CLI, and consuming them with different configurations.
+
+**What you'll do:**
+- Create topics with varying partition counts and inspect their metadata
+- Use `kafka-console-producer` to send messages with and without keys
+- Consume messages from different offsets (beginning, latest, specific offset)
+- Experiment with consumer groups to understand partition assignment
+
+**Learn:** Topic architecture, partitions, replication factor, message keys, offsets, consumer group coordination, partition-to-consumer mapping.
+
+---
 
 ## Usage
 
-From either the `starter` or `solution` directory, run:
+From `starter` directory, run:
 
 ```
 docker-compose up --build --force-recreate
 ```
 
-This will start the Kafka cluster as defined in the shared configuration.
+This will start the Kafka.
 
-## Questions / Steps (to refine later)
-1. Create the topic `exercise1.topic` with 6 partitions and replication factor 3; verify its existence via a topic listing.
-2. Describe the topic to inspect partition leaders, replica assignments, and the ISR set for each partition.
-3. Stop one broker and observe the ISR shrink; relate the impact to the configured `min.insync.replicas` and produce acknowledgment behavior.
-4. Produce messages without a key and then with a key; compare how partition selection differs and inspect per-partition log growth.
-5. Restart the stopped broker and confirm ISR recovery and any leader changes upon rejoining the cluster.
+
+## Instructions
+
+Try completing the instructions using the starter before viewing the solution section below to maximize learning.
+
+1. 
