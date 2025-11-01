@@ -19,6 +19,7 @@
 From `starter` directory, run:
 
 ```
+cd starter
 docker-compose up --build --force-recreate
 ```
 
@@ -31,22 +32,26 @@ Try completing the instructions using the starter before viewing the solution se
 
 ### Part 1: Creating and Inspecting Topics
 
-1. **Create your first topic** called `demo-topic` with 3 partitions and a replication factor of 1.
+> **Note:** Your Kafka cluster has 3 brokers running on ports 9092, 9094, and 9096. You can connect to any of them via `--bootstrap-server localhost:9092` (or 9094, 9096).
+
+1. **Create your first topic** called `demo-topic` with 3 partitions and a replication factor of 3.
    - Use the `kafka-topics` CLI tool with the `--create` option
    - Specify `--bootstrap-server localhost:9092`
    - Research the flags for setting partitions and replication factor
+   - With 3 brokers, you can now use replication factor 3 for better fault tolerance
 
 2. **List all topics** in your Kafka cluster to verify your topic was created.
    - Use `kafka-topics` with the appropriate flag to list topics
 
 3. **Describe the topic** to see detailed information about its configuration.
    - Use the `--describe` option to inspect partition assignments, leaders, and replicas
-   - Pay attention to the ISR (In-Sync Replicas) column
+   - Pay attention to the ISR (In-Sync Replicas) column—with replication factor 3, you should see all 3 brokers listed
+   - Notice how each partition has a leader and 2 replicas distributed across the 3 brokers
 
 4. **Create additional topics** to experiment with different configurations:
-   - A topic named `single-partition-topic` with only 1 partition
-   - A topic named `many-partitions-topic` with 6 partitions
-   - Describe each and observe how Kafka distributes partitions
+   - A topic named `single-partition-topic` with only 1 partition and replication factor 3
+   - A topic named `many-partitions-topic` with 6 partitions and replication factor 2
+   - Describe each and observe how Kafka distributes partition leaders and replicas across the 3 brokers
 
 ### Part 2: Producing Messages
 

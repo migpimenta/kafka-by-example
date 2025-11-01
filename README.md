@@ -116,7 +116,7 @@ kafka-by-example/
 
 ---
 ## Using the Shared Kafka Environment
-Start from `common/` (currently a single KRaft broker: replication factor must be 1 until more brokers are added in later exercises).
+Start from `common/` (3-broker KRaft cluster on ports 9092, 9094, 9096).
 
 ```bash
 cd common
@@ -134,7 +134,7 @@ Create a topic:
 ```bash
 kafka-topics --bootstrap-server localhost:9092 \
   --create --topic demo-topic \
-  --partitions 3 --replication-factor 1
+  --partitions 3 --replication-factor 3
 ```
 List topics:
 ```bash
@@ -164,10 +164,11 @@ kafka-console-consumer --bootstrap-server localhost:9092 --topic demo-topic --fr
 
 ---
 ## Future Enhancements
-Later exercises may add more brokers for replication, controller quorum configuration, and failure simulations. Expect to adjust:
-- `node.id` per broker
-- `controller.quorum.voters`
-- Replication factors and ISR behavior
+The current setup uses a 3-broker KRaft cluster with combined broker and controller roles. Future exercises may explore:
+- Separating controller and broker roles for production-like setups
+- Adding more brokers for horizontal scaling experiments
+- Implementing security (SSL/SASL authentication)
+- Multi-datacenter replication scenarios
 
 ---
 ## Next Step
