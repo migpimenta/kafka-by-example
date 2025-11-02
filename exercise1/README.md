@@ -194,4 +194,119 @@ The describe command shows critical information about your topic's architecture:
 
 The replica distribution (e.g., `1,2,3` for partition 0, `2,3,1` for partition 1) shows how Kafka strategically spreads data across brokers. This ensures that if any single broker fails, the other two can continue serving all partitions without data loss.
 
+4. **Create additional topics**
+
+Create a topic with a single partition:
+```bash
+kafka-topics --create \
+  --topic single-partition-topic \
+  --bootstrap-server localhost:9092 \
+  --partitions 1 \
+  --replication-factor 3
+```
+
+Create a topic with many partitions:
+```bash
+kafka-topics --create \
+  --topic many-partitions-topic \
+  --bootstrap-server localhost:9092 \
+  --partitions 6 \
+  --replication-factor 2
+```
+
+Describe both topics to see the distribution:
+```bash
+kafka-topics --describe \
+  --topic single-partition-topic \
+  --bootstrap-server localhost:9092
+
+kafka-topics --describe \
+  --topic many-partitions-topic \
+  --bootstrap-server localhost:9092
+```
+
+**Example output for `single-partition-topic`:**
+```
+Topic: single-partition-topic   TopicId: ABC123...  PartitionCount: 1   ReplicationFactor: 3    Configs: min.insync.replicas=2
+        Topic: single-partition-topic   Partition: 0    Leader: 2       Replicas: 2,3,1 Isr: 2,3,1
+```
+
+With only 1 partition, you'll notice:
+- Only one leader is assigned (in this example, broker 2)
+- All 3 brokers still hold replicas (2, 3, 1) for fault tolerance
+- This configuration limits parallelism—only one consumer in a group can process messages at a time
+- However, it guarantees total ordering of all messages in the topic
+
+**Example output for `many-partitions-topic`:**
+```
+Topic: many-partitions-topic    TopicId: DEF456...  PartitionCount: 6   ReplicationFactor: 2    Configs: min.insync.replicas=2
+        Topic: many-partitions-topic    Partition: 0    Leader: 1       Replicas: 1,2   Isr: 1,2
+        Topic: many-partitions-topic    Partition: 1    Leader: 2       Replicas: 2,3   Isr: 2,3
+        Topic: many-partitions-topic    Partition: 2    Leader: 3       Replicas: 3,1   Isr: 3,1
+        Topic: many-partitions-topic    Partition: 3    Leader: 1       Replicas: 1,3   Isr: 1,3
+        Topic: many-partitions-topic    Partition: 4    Leader: 2       Replicas: 2,1   Isr: 2,1
+        Topic: many-partitions-topic    Partition: 5    Leader: 3       Replicas: 3,2   Isr: 3,2
+```
+
+With 6 partitions and replication factor 2, observe:
+- **Leadership distribution**: Each broker leads 2 partitions (broker 1 leads 0 and 3, broker 2 leads 1 and 4, broker 3 leads 2 and 5)
+- **Replica placement**: Kafka evenly distributes replicas across all brokers, ensuring no single broker becomes a bottleneck
+- **Fault tolerance**: With replication factor 2, each partition can survive one broker failure
+- **Parallelism**: Up to 6 consumers in a group can process messages simultaneously, one per partition
+- **Trade-off**: Lower replication factor (2 vs 3) means less durability but potentially better write performance
+
+This demonstrates Kafka's intelligent partition assignment algorithm, which aims to:
+1. Distribute leadership evenly across brokers to balance load
+2. Place replicas on different brokers than the leader for fault tolerance
+3. Spread replicas evenly to avoid overloading any single broker
+
+### Part 2: Producing Messages
+
+5. **Send messages without keys** using the console producer.
+
+Start the console producer:
+```bash
+kafka-console-producer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092
+```
+
+Once the producer starts, you'll see a prompt (`>`). Type messages, one per line:
+```
+>Hello Kafka!
+>This is my first message
+>Messages without keys are distributed round-robin
+>across all partitions
+>You can type as many messages as you want
+```
+
+Each time you press Enter, the message is sent to Kafka immediately. To exit gracefully:
+- **On Linux/macOS**: Press `Ctrl+D` (sends EOF) or `Ctrl+C` (interrupt)
+- **On Windows**: Press `Ctrl+Z` then Enter, or `Ctrl+C`
+
+**What happens to messages without keys:**
+
+When you don't specify a key, Kafka uses a **round-robin** or **sticky partitioning** strategy (depending on your Kafka version and producer configuration):
+
+- **Sticky partitioning (default in newer versions)**: Messages are batched and sent to one partition until the batch is full or a timeout occurs, then switches to another partition. This improves throughput by reducing the number of requests.
+- **Round-robin (older versions)**: Each message alternates between partitions sequentially (0 → 1 → 2 → 0 → 1 → 2...).
+
+Since messages are distributed across multiple partitions without keys:
+- ✅ **Good for**: High throughput and parallel processing when message order doesn't matter globally
+- ❌ **Not ideal for**: Scenarios where you need messages to be processed in the exact order they were sent
+- 📝 **Note**: Order is still guaranteed *within* each partition, but not across partitions
+
+Example distribution (with 3 partitions):
+```
+Message "Hello Kafka!" → Partition 1
+Message "This is my first message" → Partition 1 (sticky batch)
+Message "Messages without keys..." → Partition 1 (sticky batch)
+Message "across all partitions" → Partition 2 (new batch)
+Message "You can type as many..." → Partition 2 (sticky batch)
+```
+
+The exact partition assignment is handled by the producer's partitioner logic and isn't visible in the console producer output, but you can verify it later by consuming from specific partitions.
+
+6. **Send messages with keys**
+
 
