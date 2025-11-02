@@ -146,3 +146,52 @@ You've successfully completed Exercise 1 when you can:
 - ✅ Run multiple consumers in the same group and observe partition assignment
 - ✅ Monitor consumer group lag using CLI tools
 - ✅ Explain how message keys affect partition assignment 
+
+## Solutions
+
+1. **Create `demo-topic` with 3 partitions and replication factor 3**
+
+```
+kafka-topics --create \
+  --topic my-topic \
+  --bootstrap-server localhost:9092 \
+  --partitions 3 \
+  --replication-factor 3
+```
+
+2. **List all topics**
+
+```
+kafka-topics --list --bootstrap-server localhost:9092
+```
+
+3. **Describe the topics**
+
+```
+kafka-topics --describe \
+  --topic my-topic \
+  --bootstrap-server localhost:9092
+```
+
+You should have the following result:
+```
+Topic: my-topic TopicId: PK1MmXu8SJu51lAwefYBRQ PartitionCount: 3       ReplicationFactor: 3    Configs: min.insync.replicas=2
+        Topic: my-topic Partition: 0    Leader: 1       Replicas: 1,2,3 Isr: 1,2,3      Elr: N/A        LastKnownElr: N/A
+        Topic: my-topic Partition: 1    Leader: 2       Replicas: 2,3,1 Isr: 2,3,1      Elr: N/A        LastKnownElr: N/A
+        Topic: my-topic Partition: 2    Leader: 3       Replicas: 3,1,2 Isr: 3,1,2      Elr: N/A        LastKnownElr: N/A
+```
+
+**Understanding the output:**
+
+The describe command shows critical information about your topic's architecture:
+
+- **PartitionCount: 3** - The topic is divided into 3 partitions (0, 1, and 2), allowing parallel processing and horizontal scaling.
+- **ReplicationFactor: 3** - Each partition has 3 copies (one leader and 2 replicas) distributed across the brokers for fault tolerance.
+- **Leader** - The broker ID responsible for handling all reads and writes for that partition. Notice how leadership is distributed (broker 1 leads partition 0, broker 2 leads partition 1, broker 3 leads partition 2).
+- **Replicas** - Lists all broker IDs that should have a copy of this partition's data. For partition 0, replicas are on brokers 1, 2, and 3.
+- **Isr (In-Sync Replicas)** - The set of replicas that are fully caught up with the leader. All replicas being in-sync (1,2,3) indicates a healthy partition. If a broker falls behind or fails, it will be removed from the ISR.
+- **min.insync.replicas=2** - A safety configuration requiring at least 2 replicas (leader + 1 follower) to acknowledge writes. This prevents data loss if one broker goes down, while still allowing writes to succeed.
+
+The replica distribution (e.g., `1,2,3` for partition 0, `2,3,1` for partition 1) shows how Kafka strategically spreads data across brokers. This ensures that if any single broker fails, the other two can continue serving all partitions without data loss.
+
+
