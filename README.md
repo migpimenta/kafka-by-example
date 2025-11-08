@@ -2,12 +2,7 @@
 
 Learning Kafka through practical exercises gives you a deep understanding of how it behaves in real‑world scenarios. Below are 6 progressively challenging exercises that build your skills—from basic operations to production‑ready configurations and failure scenarios.
 
-> Each exercise has:
-> - a `starter/` folder: implement your solution here following that exercise's `README.md` instructions.
-> - a `solution/` folder: one possible reference solution (there can be others).
->
-
-Try to complete the starter before viewing the solution to maximize learning.
+> Each exercise folder contains a `README.md` with detailed instructions, concepts to learn, and solutions. Work through the instructions step-by-step to build your understanding before reviewing the provided solutions.
 
 ---
 ## Exercise Roadmap
@@ -102,15 +97,15 @@ This repository uses a shared Kafka environment plus isolated folders per exerci
 
 ```
 kafka-by-example/
-├── common/                # Shared Docker/Kafka setup (KRaft single broker for now)
+├── common/                # Shared Docker/Kafka setup (3-broker KRaft cluster)
 ├── exercise1/
-│   ├── README.md          # Instructions & goals
-│   ├── starter/           # Where you build your solution
-│   └── solution/          # One possible implementation
-├── exercise2/
-│   ├── README.md
+│   ├── README.md          # Instructions, concepts, and solutions
 │   ├── starter/
+│   │   └── docker-compose.yml
 │   └── solution/
+│       └── docker-compose.yml
+├── exercise2/
+│   └── README.md          # (future exercise)
 └── ... (future exercises)
 ```
 
@@ -155,12 +150,12 @@ kafka-console-consumer --bootstrap-server localhost:9092 --topic demo-topic --fr
 
 ---
 ## Workflow Per Exercise
-1. Read the exercise's `README.md`.
-2. Work in that exercise's `starter/` folder.
-3. Use or extend the shared environment under `common/` as needed.
+1. Read the exercise's `README.md` for instructions and concepts.
+2. Work in that exercise's folder (or `starter/` subfolder if provided).
+3. Use the shared Kafka environment under `common/` or extend it as needed.
 4. Test your approach (CLI, code, logs, metrics).
-5. Compare with `solution/`—note design choices and trade‑offs.
-6. Iterate or refactor for clarity, resilience, performance.
+5. Review the solutions section in the README to compare approaches and learn trade‑offs.
+6. Iterate or refactor for clarity, resilience, and performance.
 
 ---
 ## Future Enhancements
