@@ -16,19 +16,23 @@
 
 ## Usage
 
-From `starter` directory, run:
+From the `exercise1` directory, run:
 
-```
-cd starter
+```bash
+cd exercise1
 docker-compose up --build --force-recreate
 ```
 
-This will start the Kafka.
+This will start the 3-broker Kafka cluster.
 
+To stop and clean up:
+```bash
+docker-compose down -v
+```
 
 ## Instructions
 
-Try completing the instructions using the starter before viewing the solution section below to maximize learning.
+Try completing the instructions below before viewing the solution section to maximize learning.
 
 ### Part 1: Creating and Inspecting Topics
 
