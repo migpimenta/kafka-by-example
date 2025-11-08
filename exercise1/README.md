@@ -306,6 +306,58 @@ Message "You can type as many..." → Partition 2 (sticky batch)
 
 The exact partition assignment is handled by the producer's partitioner logic and isn't visible in the console producer output, but you can verify it later by consuming from specific partitions.
 
-6. **Send messages with keys**
+6. **Send messages with keys** to understand how keys affect partition assignment.
+
+Start the console producer with key parsing enabled:
+```bash
+kafka-console-producer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --property parse.key=true \
+  --property key.separator=:
+```
+
+Once the producer starts, send messages in `key:value` format:
+```
+>user1:Hello from user1
+>user2:First message from user2
+>user3:User3 checking in
+>user1:Second message from user1
+>user2:Another message from user2
+>user1:Third message from user1
+>user4:New user joining
+>user3:User3 again
+>user2:User2 final message
+>user4:User4 second message
+```
+
+Press `Ctrl+D` (or `Ctrl+C`) to exit when done.
+
+**What happens with message keys:**
+
+Unlike keyless messages, messages with keys are **deterministically assigned** to partitions using a hashing algorithm:
+
+- Kafka computes a hash of the key using MurmurHash2: `hash = murmur2(key)`
+- The hash is mapped to a partition: `partition = hash(key) % partition_count`
+- **Critical guarantee**: All messages with the same key always go to the same partition
+
+This ensures:
+- ✅ **Ordering per key**: Messages with `user1` will always be processed in order
+- ✅ **Logical grouping**: Related messages stay together on the same partition
+- ✅ **Stateful processing**: Consumers can maintain state per key
+
+Example distribution with 3 partitions:
+```
+user1:Hello from user1           → Partition 2 (hash(user1) % 3 = 2)
+user2:First message from user2   → Partition 0 (hash(user2) % 3 = 0)
+user3:User3 checking in          → Partition 1 (hash(user3) % 3 = 1)
+user1:Second message from user1  → Partition 2 (same key → same partition)
+user2:Another message from user2 → Partition 0 (same key → same partition)
+```
+
+**Important notes:**
+- The partition assignment for a key remains consistent **only if the partition count stays the same**
+- Adding partitions later breaks the key-to-partition mapping for existing data
+- Keys can be strings, numbers, or any serializable data
 
 
