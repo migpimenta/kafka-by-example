@@ -99,11 +99,7 @@ This repository uses a shared Kafka environment plus isolated folders per exerci
 kafka-by-example/
 ├── common/                # Shared Docker/Kafka setup (3-broker KRaft cluster)
 ├── exercise1/
-│   ├── README.md          # Instructions, concepts, and solutions
-│   ├── starter/
-│   │   └── docker-compose.yml
-│   └── solution/
-│       └── docker-compose.yml
+│   └── README.md          # Instructions, concepts, and solutions
 ├── exercise2/
 │   └── README.md          # (future exercise)
 └── ... (future exercises)
@@ -151,7 +147,7 @@ kafka-console-consumer --bootstrap-server localhost:9092 --topic demo-topic --fr
 ---
 ## Workflow Per Exercise
 1. Read the exercise's `README.md` for instructions and concepts.
-2. Work in that exercise's folder (or `starter/` subfolder if provided).
+2. Work in that exercise's folder.
 3. Use the shared Kafka environment under `common/` or extend it as needed.
 4. Test your approach (CLI, code, logs, metrics).
 5. Review the solutions section in the README to compare approaches and learn trade‑offs.
