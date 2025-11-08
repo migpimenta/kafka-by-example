@@ -364,4 +364,58 @@ user2:Another message from user2 → Partition 0 (same key → same partition)
 - Adding partitions later breaks the key-to-partition mapping for existing data
 - Keys can be strings, numbers, or any serializable data
 
+### Part 3: Consuming Messages
+
+7. **Consume from the beginning** to read all messages in the topic.
+
+Start the console consumer with the `--from-beginning` flag:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --from-beginning
+```
+
+You'll see all messages that were previously produced to the topic, including both the keyless messages from step 5 and the keyed messages from step 6:
+```
+Hello Kafka!
+This is my first message
+Messages without keys are distributed round-robin
+user1:Hello from user1
+across all partitions
+user2:First message from user2
+You can type as many messages as you want
+user3:User3 checking in
+user1:Second message from user1
+user2:Another message from user2
+...
+```
+
+Press `Ctrl+C` to stop the consumer.
+
+**Why messages appear out of order:**
+
+You'll notice that messages don't appear in the exact order you sent them. This happens because:
+
+1. **Multiple partitions**: Your `demo-topic` has 3 partitions, and messages are distributed across all of them
+2. **Consumer reads in partition order**: The consumer reads from all partitions but processes them independently
+3. **No global ordering guarantee**: Kafka only guarantees ordering **within a single partition**, not across partitions
+
+The consumer interleaves messages from different partitions as it polls them. For example:
+```
+Partition 0: [msg1, msg4, msg7]
+Partition 1: [msg2, msg5, msg8]  →  Consumer sees: msg1, msg2, msg3, msg4, msg5, msg6, msg7, msg8, msg9
+Partition 2: [msg3, msg6, msg9]
+```
+
+**When order matters:**
+- If you need **global ordering** across all messages, use a single partition (but this limits parallelism)
+- If you need **ordering per entity** (user, session, device), use message keys to ensure related messages go to the same partition
+- The consumer will process messages from each partition in order, maintaining per-key ordering
+
+**The `--from-beginning` flag:**
+- Without this flag, the consumer starts from the **latest** offset (only new messages)
+- With this flag, it starts from **offset 0** in each partition (all existing messages)
+- This is useful for replaying data, debugging, or initial data loads
+
 
