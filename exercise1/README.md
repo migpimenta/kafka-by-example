@@ -224,7 +224,6 @@ kafka-topics --describe \
   --topic many-partitions-topic \
   --bootstrap-server localhost:9092
 ```
-
 **Example output for `single-partition-topic`:**
 ```
 Topic: single-partition-topic   TopicId: ABC123...  PartitionCount: 1   ReplicationFactor: 3    Configs: min.insync.replicas=2
