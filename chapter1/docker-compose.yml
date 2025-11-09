@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  kafka-1:
+    extends:
+      file: ../common/docker-compose.yml
+      service: kafka-1
+
+  kafka-2:
+    extends:
+      file: ../common/docker-compose.yml
+      service: kafka-2
+
+  kafka-3:
+    extends:
+      file: ../common/docker-compose.yml
+      service: kafka-3
+
+networks:
+  kafka-net:
+    name: kafka-net
