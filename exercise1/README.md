@@ -418,4 +418,307 @@ Partition 2: [msg3, msg6, msg9]
 - With this flag, it starts from **offset 0** in each partition (all existing messages)
 - This is useful for replaying data, debugging, or initial data loads
 
+8. **Consume with key display** to see how messages were keyed.
+
+Start the console consumer with key printing enabled:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --from-beginning \
+  --property print.key=true \
+  --property key.separator=:
+```
+
+Output will show keys for keyed messages and `null` for keyless messages:
+```
+null:Hello Kafka!
+null:This is my first message
+user1:Hello from user1
+user2:First message from user2
+user3:User3 checking in
+user1:Second message from user1
+null:Messages without keys are distributed round-robin
+user2:Another message from user2
+...
+```
+
+The key-value separator (`:`) makes it easy to distinguish between keys and values. Messages sent without keys show `null` as the key, confirming they were sent without a key and were distributed using the default partitioning strategy.
+
+9. **Consume from a specific offset** in a particular partition.
+
+Read partition 0 starting from offset 0:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --partition 0 \
+  --offset 0
+```
+
+Read partition 0 starting from offset 2:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --partition 0 \
+  --offset 2
+```
+
+**Understanding offsets:**
+
+- **Numeric offset (e.g., 0, 2, 10)**: Starts reading from that exact position in the partition
+- **`earliest`**: Equivalent to offset 0, reads from the beginning of the partition
+- **`latest`**: Starts from the end, only reads new messages that arrive after the consumer starts
+
+When targeting a specific partition, you only see messages from that partition in the exact order they were written. This is useful for:
+- Debugging specific partition behavior
+- Replaying messages from a known point
+- Investigating message ordering within a partition
+
+### Part 4: Consumer Groups and Partition Assignment
+
+10. **Create your first consumer group** by assigning a group ID.
+
+Start a console consumer with a group ID:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --group demo-group
+```
+
+Keep this consumer running. It will:
+- Start consuming from the **latest** offset (not from beginning)
+- Track its progress using the group ID
+- Only receive new messages produced after it starts
+
+The consumer is now part of the `demo-group` consumer group, and Kafka will track which messages this group has consumed.
+
+11. **Produce new messages** while your consumer is running.
+
+Open a second terminal and start a producer:
+```bash
+kafka-console-producer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092
+```
+
+Send messages:
+```
+>Real-time message 1
+>Real-time message 2
+>Real-time message 3
+```
+
+Switch to the consumer terminal—you should see these messages appear immediately. This demonstrates Kafka's real-time streaming capability.
+
+12. **Check consumer group status** to see offset information.
+
+```bash
+kafka-consumer-groups \
+  --bootstrap-server localhost:9092 \
+  --describe \
+  --group demo-group
+```
+
+Example output:
+```
+GROUP           TOPIC       PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG  CONSUMER-ID                                     HOST            CLIENT-ID
+demo-group      demo-topic  0          15              15              0    consumer-demo-group-1-abc123                    /172.17.0.1     consumer-demo-group-1
+demo-group      demo-topic  1          12              12              0    consumer-demo-group-1-abc123                    /172.17.0.1     consumer-demo-group-1
+demo-group      demo-topic  2          18              18              0    consumer-demo-group-1-abc123                    /172.17.0.1     consumer-demo-group-1
+```
+
+**Understanding the output:**
+- **CURRENT-OFFSET**: The last offset this group has successfully processed
+- **LOG-END-OFFSET**: The latest offset available in the partition
+- **LAG**: The difference (LOG-END-OFFSET - CURRENT-OFFSET). Zero lag means the consumer is caught up
+- **CONSUMER-ID**: Unique identifier for each consumer instance
+- Notice one consumer is assigned all 3 partitions
+
+13. **Add a second consumer to the same group** to observe partition rebalancing.
+
+In a new terminal, start a second consumer:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --group demo-group
+```
+
+Both consumers will log rebalancing messages. After rebalancing:
+- Consumer 1 might handle partitions 0 and 1
+- Consumer 2 might handle partition 2
+
+Produce new messages and observe they're distributed between the two consumers. Check the group status again:
+```bash
+kafka-consumer-groups \
+  --bootstrap-server localhost:9092 \
+  --describe \
+  --group demo-group
+```
+
+You'll see each consumer assigned to different partitions, demonstrating Kafka's automatic load balancing within consumer groups.
+
+14. **Add a third consumer** to fully distribute the workload.
+
+Start a third consumer:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --group demo-group
+```
+
+After rebalancing, each of the 3 consumers will handle exactly 1 partition. Produce messages and verify each consumer processes roughly equal traffic.
+
+**What happens with a 4th consumer?**
+
+If you start a 4th consumer with only 3 partitions:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --group demo-group
+```
+
+The 4th consumer will be idle—it won't receive any messages because all 3 partitions are already assigned. Kafka cannot split a partition across multiple consumers. This demonstrates the relationship between partition count and maximum parallelism within a consumer group.
+
+15. **Experiment with multiple consumer groups** to understand independence.
+
+Create a second consumer group:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --group demo-group-2 \
+  --from-beginning
+```
+
+This consumer reads from the beginning because `demo-group-2` has never consumed from this topic before. Each consumer group maintains its own offset tracking independently.
+
+Compare offsets between groups:
+```bash
+kafka-consumer-groups \
+  --bootstrap-server localhost:9092 \
+  --describe \
+  --group demo-group
+
+kafka-consumer-groups \
+  --bootstrap-server localhost:9092 \
+  --describe \
+  --group demo-group-2
+```
+
+`demo-group` will show offsets at the end (caught up), while `demo-group-2` might show different offsets depending on how much it has consumed. This independence allows:
+- Multiple applications to consume the same data
+- Different processing speeds per application
+- Replay capability per group without affecting others
+
+### Part 5: Understanding Partition Assignment with Keys
+
+16. **Test key-based partition assignment**.
+
+Produce messages with distinct keys:
+```bash
+kafka-console-producer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --property parse.key=true \
+  --property key.separator=:
+```
+
+Send 20-30 messages with 4-5 distinct keys:
+```
+>apple:Message 1 from apple
+>banana:Message 1 from banana
+>cherry:Message 1 from cherry
+>date:Message 1 from date
+>apple:Message 2 from apple
+>banana:Message 2 from banana
+>elderberry:Message 1 from elderberry
+>apple:Message 3 from apple
+>cherry:Message 2 from cherry
+>date:Message 2 from date
+>banana:Message 3 from banana
+>elderberry:Message 2 from elderberry
+>apple:Message 4 from apple
+>cherry:Message 3 from cherry
+>date:Message 3 from date
+>banana:Message 4 from banana
+>apple:Message 5 from apple
+>elderberry:Message 3 from elderberry
+```
+
+Consume with key printing:
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --from-beginning \
+  --property print.key=true \
+  --property key.separator=:
+```
+
+Now read each partition individually to see which keys went where:
+
+**Partition 0:**
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --partition 0 \
+  --offset earliest \
+  --property print.key=true \
+  --property key.separator=:
+```
+
+**Partition 1:**
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --partition 1 \
+  --offset earliest \
+  --property print.key=true \
+  --property key.separator=:
+```
+
+**Partition 2:**
+```bash
+kafka-console-consumer \
+  --topic demo-topic \
+  --bootstrap-server localhost:9092 \
+  --partition 2 \
+  --offset earliest \
+  --property print.key=true \
+  --property key.separator=:
+```
+
+**Document your findings:**
+
+You might observe something like:
+```
+Partition 0: banana (all 4 messages in order)
+Partition 1: cherry, elderberry (all messages for each key in order)
+Partition 2: apple, date (all messages for each key in order)
+```
+
+**Verify consistency:**
+
+Produce additional messages with the same keys:
+```
+>apple:Message 6 from apple
+>banana:Message 5 from banana
+>cherry:Message 4 from cherry
+```
+
+Consume from specific partitions again—you'll confirm that:
+- `apple` messages still go to partition 2
+- `banana` messages still go to partition 0
+- `cherry` messages still go to partition 1
+
+This demonstrates the **deterministic nature** of key-based partitioning: as long as the partition count doesn't change, a given key will always map to the same partition, guaranteeing ordering for all messages with that key.
+
 
