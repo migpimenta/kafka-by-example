@@ -1,4 +1,4 @@
-# Exercise 1: Kafka Fundamentals: Topics, Producers, and Consumers
+# Chapter 1: Kafka Fundamentals: Topics, Producers, and Consumers
 
 ## Summary
 
@@ -16,10 +16,10 @@
 
 ## Usage
 
-From the `exercise1` directory, run:
+From the `chapter1` directory, run:
 
 ```bash
-cd exercise1
+cd chapter1
 docker-compose up --build --force-recreate
 ```
 
@@ -143,7 +143,7 @@ After completing the steps above, take some time to reflect on these questions:
 
 ### Verification
 
-You've successfully completed Exercise 1 when you can:
+You've successfully completed Chapter 1 when you can:
 - ✅ Create topics with different partition counts and describe their configuration
 - ✅ Produce messages both with and without keys using the console producer
 - ✅ Consume messages from different starting points (beginning, latest, specific offset)
@@ -725,7 +725,7 @@ This demonstrates the **deterministic nature** of key-based partitioning: as lon
 
 ## Concepts Deep Dive
 
-This section provides detailed explanations of the core Kafka concepts covered in this exercise.
+This section provides detailed explanations of the core Kafka concepts covered in this chapter.
 
 ### Topics and Partitions
 
@@ -1118,6 +1118,6 @@ You've learned the foundational concepts of Kafka through hands-on practice:
 
 These fundamentals are the building blocks for all advanced Kafka features. Understanding them deeply will help you design robust, scalable streaming applications.
 
-**Next steps**: Proceed to Exercise 2 to explore more advanced topics like handling broker failures, tuning performance, and understanding behavior under load.
+**Next steps**: Proceed to Chapter 2 to explore more advanced topics like handling broker failures, tuning performance, and understanding behavior under load.
 
 

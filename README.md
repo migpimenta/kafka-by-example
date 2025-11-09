@@ -1,11 +1,11 @@
 # Kafka by Example
 
-Learning Kafka through practical exercises gives you a deep understanding of how it behaves in real‑world scenarios. Below are 6 progressively challenging exercises that build your skills—from basic operations to production‑ready configurations and failure scenarios.
+Learning Kafka through practical chapters gives you a deep understanding of how it behaves in real‑world scenarios. Below are 6 progressively challenging chapters that build your skills—from basic operations to production‑ready configurations and failure scenarios.
 
-> Each exercise folder contains a `README.md` with detailed instructions, concepts to learn, and solutions. Work through the instructions step-by-step to build your understanding before reviewing the provided solutions.
+> Each chapter folder contains a `README.md` with detailed instructions, concepts to learn, and solutions. Work through the instructions step-by-step to build your understanding before reviewing the provided solutions.
 
 ---
-## Exercise Roadmap
+## Chapter Roadmap
 
 ### 1. Kafka Fundamentals: Topics, Producers, and Consumers
 **Goal:** Master the basics by creating topics, producing messages via CLI, and consuming them with different configurations.
@@ -93,16 +93,16 @@ Learning Kafka through practical exercises gives you a deep understanding of how
 
 ---
 ## Project Structure
-This repository uses a shared Kafka environment plus isolated folders per exercise for focused learning.
+This repository uses a shared Kafka environment plus isolated folders per chapter for focused learning.
 
 ```
 kafka-by-example/
 ├── common/                # Shared Docker/Kafka setup (3-broker KRaft cluster)
-├── exercise1/
+├── chapter1/
 │   └── README.md          # Instructions, concepts, and solutions
-├── exercise2/
-│   └── README.md          # (future exercise)
-└── ... (future exercises)
+├── chapter2/
+│   └── README.md          # (future chapter)
+└── ... (future chapters)
 ```
 
 ---
@@ -145,9 +145,9 @@ kafka-console-consumer --bootstrap-server localhost:9092 --topic demo-topic --fr
 ```
 
 ---
-## Workflow Per Exercise
-1. Read the exercise's `README.md` for instructions and concepts.
-2. Work in that exercise's folder.
+## Workflow Per Chapter
+1. Read the chapter's `README.md` for instructions and concepts.
+2. Work in that chapter's folder.
 3. Use the shared Kafka environment under `common/` or extend it as needed.
 4. Test your approach (CLI, code, logs, metrics).
 5. Review the solutions section in the README to compare approaches and learn trade‑offs.
@@ -155,7 +155,7 @@ kafka-console-consumer --bootstrap-server localhost:9092 --topic demo-topic --fr
 
 ---
 ## Future Enhancements
-The current setup uses a 3-broker KRaft cluster with combined broker and controller roles. Future exercises may explore:
+The current setup uses a 3-broker KRaft cluster with combined broker and controller roles. Future chapters may explore:
 - Separating controller and broker roles for production-like setups
 - Adding more brokers for horizontal scaling experiments
 - Implementing security (SSL/SASL authentication)
@@ -163,6 +163,6 @@ The current setup uses a 3-broker KRaft cluster with combined broker and control
 
 ---
 ## Next Step
-Start with `exercise1/`—open its `README.md`, spin up Kafka from `common/`, and follow the instructions.
+Start with `chapter1/`—open its `README.md`, spin up Kafka from `common/`, and follow the instructions.
 
 Happy Kafka exploring!
