@@ -1,4 +1,4 @@
-# Kafka by Example
+#  Kafka Hands-On: Learning by Doing
 
 Learning Kafka through practical chapters gives you a deep understanding of how it behaves in real‑world scenarios. Below are 6 progressively challenging chapters that build your skills—from basic operations to production‑ready configurations and failure scenarios.
 
@@ -8,15 +8,16 @@ Learning Kafka through practical chapters gives you a deep understanding of how 
 ## Chapter Roadmap
 
 ### 1. Kafka Fundamentals: Topics, Producers, and Consumers
-**Goal:** Master the basics by creating topics, producing messages via CLI, and consuming them with different configurations.
+**Goal:** Build a solid foundation in Kafka fundamentals through hands-on exploration using a 3-broker cluster.
 
 **What you'll do:**
-- Create topics with varying partition counts and inspect their metadata
-- Use `kafka-console-producer` to send messages with and without keys
-- Consume messages from different offsets (beginning, latest, specific offset)
-- Experiment with consumer groups to understand partition assignment
+- Create and inspect topics with different partition counts and replication factors
+- Produce messages with and without keys to understand partitioning strategies
+- Consume messages from various positions and observe ordering guarantees
+- Work with consumer groups to understand partition assignment and rebalancing
+- Test key-based routing and monitor consumer lag using CLI tools
 
-**Learn:** Topic architecture, partitions, replication factor, message keys, offsets, consumer group coordination, partition-to-consumer mapping.
+**Learn:** Topic architecture, partitions, replication factor, ISR (In-Sync Replicas), message keys, hashing-based partitioning, offsets, consumer groups, partition assignment strategies, rebalancing, fault tolerance, and the trade-offs between throughput and durability.
 
 ---
 
