@@ -745,6 +745,60 @@ This section provides detailed explanations of the core Kafka concepts covered i
 - A common starting point: number of expected consumers or 2-3x the number of brokers
 - Increasing partition count later is possible but breaks key-based routing guarantees
 
+### Brokers and Cluster Architecture
+
+A **Kafka broker** is a single Kafka server that stores data and serves client requests. Multiple brokers form a **Kafka cluster**.
+
+**Broker responsibilities:**
+- **Storage**: Each broker stores partition replicas on its local disk
+- **Serving requests**: Handles produce requests (writes) and fetch requests (reads) from clients
+- **Replication**: Followers fetch data from leaders to stay in sync
+- **Metadata management**: Participates in cluster coordination and leadership elections
+
+**Cluster architecture:**
+
+```
+Kafka Cluster
+├── Broker 1 (localhost:9092)
+│   ├── Partition 0 (leader)
+│   ├── Partition 1 (follower)
+│   └── Partition 2 (follower)
+├── Broker 2 (localhost:9094)
+│   ├── Partition 0 (follower)
+│   ├── Partition 1 (leader)
+│   └── Partition 2 (follower)
+└── Broker 3 (localhost:9096)
+    ├── Partition 0 (follower)
+    ├── Partition 1 (follower)
+    └── Partition 2 (leader)
+```
+
+**Key concepts:**
+
+- **Cluster**: A group of brokers working together, appearing as a single system to clients
+- **Broker ID**: Each broker has a unique integer identifier (1, 2, 3, etc.)
+- **Bootstrap servers**: Initial broker addresses clients use to discover the full cluster
+  - Clients connect to any broker and automatically discover all others
+  - Convention: provide multiple brokers for redundancy (e.g., `localhost:9092,localhost:9094,localhost:9096`)
+- **Controller**: One broker is elected as the controller, responsible for:
+  - Managing partition leader elections
+  - Handling broker joins/failures
+  - Coordinating metadata changes across the cluster
+  - In KRaft mode, controllers form a separate quorum for consensus
+
+**Why multiple brokers?**
+
+1. **Fault tolerance**: If one broker fails, others continue serving data
+2. **Scalability**: Distribute storage and load across multiple machines
+3. **Parallelism**: Multiple brokers can serve different partitions simultaneously
+4. **High availability**: No single point of failure
+
+**Production considerations:**
+- Minimum 3 brokers recommended for production (allows RF=3)
+- Brokers should be on separate physical/virtual machines
+- Consider separate disks for data and logs
+- Network bandwidth often the limiting factor, not CPU or disk
+
 ### Replication and Fault Tolerance
 
 Kafka provides durability through **replication**. Each partition has multiple copies (replicas) distributed across different brokers.
