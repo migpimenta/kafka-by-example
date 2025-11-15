@@ -2,15 +2,17 @@
 
 ## Summary
 
-**Goal:** Master the basics by creating topics, producing messages via CLI, and consuming them with different configurations.
+**Goal:** Build a solid foundation in Kafka fundamentals through hands-on exploration of topics, partitions, replication, producers, and consumers using a 3-broker cluster.
 
 **What you'll do:**
-- Create topics with varying partition counts and inspect their metadata
-- Use `kafka-console-producer` to send messages with and without keys
-- Consume messages from different offsets (beginning, latest, specific offset)
-- Experiment with consumer groups to understand partition assignment
+- Create and inspect topics with different partition counts and replication factors
+- Produce messages with and without keys to understand partitioning strategies
+- Consume messages from various offsets and partitions to observe ordering guarantees
+- Work with consumer groups to understand partition assignment, rebalancing, and parallel processing
+- Test key-based routing and verify deterministic partition assignment
+- Monitor consumer lag and offset tracking using CLI tools
 
-**Learn:** Topic architecture, partitions, replication factor, message keys, offsets, consumer group coordination, partition-to-consumer mapping.
+**Learn:** Topic architecture, partitions, replication factor, ISR (In-Sync Replicas), message keys, hashing-based partitioning, offsets, consumer groups, partition assignment strategies, rebalancing, fault tolerance, leader election, producer acknowledgments, and the trade-offs between throughput, latency, and durability.
 
 ---
 
@@ -27,7 +29,7 @@ This will start the 3-broker Kafka cluster.
 
 To stop and clean up:
 ```bash
-docker-compose down -v
+docker rm -f $(docker ps -aq --filter "name=kafka-")
 ```
 
 ## Instructions
