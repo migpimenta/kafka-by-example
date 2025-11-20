@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Extend the common Kafka cluster
+  kafka-1:
+    extends:
+      file: ../common/docker-compose.yml
+      service: kafka-1
+
+  kafka-2:
+    extends:
+      file: ../common/docker-compose.yml
+      service: kafka-2
+
+  kafka-3:
+    extends:
+      file: ../common/docker-compose.yml
+      service: kafka-3
+
+  # Schema Registry for Avro serialization (Exercise 11+)
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.5.0
+    hostname: schema-registry
+    container_name: schema-registry
+    depends_on:
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka-1:19092,kafka-2:19094,kafka-3:19096'
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    networks:
+      - kafka-net
+
+networks:
+  kafka-net:
+    external: true
+    name: kafka-net
+

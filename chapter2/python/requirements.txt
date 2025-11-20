@@ -1,0 +1,16 @@
+# Kafka client library (librdkafka wrapper - production-ready)
+confluent-kafka==2.3.0
+
+# Avro serialization (for Exercise 11+)
+avro-python3==1.10.2
+confluent-kafka[avro]==2.3.0
+
+# JSON schema validation (optional)
+jsonschema==4.20.0
+
+# Structured logging
+python-json-logger==2.0.7
+
+# Faker for generating test data
+Faker==20.1.0
+

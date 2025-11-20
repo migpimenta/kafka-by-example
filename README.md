@@ -22,15 +22,19 @@ Learning Kafka through practical chapters gives you a deep understanding of how 
 ---
 
 ### 2. Building Production-Grade Clients
-**Goal:** Implement robust producer and consumer applications with proper configuration, error handling, and monitoring.
+**Goal:** Build robust producer and consumer applications using a realistic e-commerce order processing pipeline.
+
+**Use Case:** Implement an order processing system where orders flow through multiple stages (placement → payment → fulfillment → shipping), with each stage consuming from one topic and producing to another.
 
 **What you'll do:**
-- Write a producer application (Java/Python/Go) that sends structured data with configurable serialization (JSON, Avro, or Protobuf)
-- Configure producer reliability settings: `acks`, `retries`, `idempotence`, batching, and compression
-- Build a consumer application with proper poll loops, commit strategies (auto vs manual), and graceful shutdown
-- Implement structured logging to track message processing and errors
+- Build producers that generate realistic order events with proper serialization (JSON, then Avro)
+- Configure producer reliability: `acks=all`, idempotence, retries, batching, compression
+- Implement consumers with manual offset management, error handling, and dead letter queues
+- Create multi-stage processing pipelines (consumer reads orders → produces payments → produces shipments)
+- Migrate from JSON to Avro with Schema Registry and handle schema evolution
+- Implement graceful shutdown, structured logging, and end-to-end latency tracking
 
-**Learn:** Client APIs, serialization formats, producer durability vs throughput trade-offs, consumer commit semantics, application lifecycle management.
+**Learn:** Kafka client APIs (Java/Python), serialization formats (JSON, Avro), producer durability vs throughput trade-offs, consumer commit semantics (auto vs manual), idempotent producers, transactional processing, error handling patterns, retry strategies, dead letter queues, schema evolution, graceful shutdown patterns.
 
 ---
 
