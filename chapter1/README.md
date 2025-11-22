@@ -21,15 +21,14 @@
 From the `chapter1` directory, run:
 
 ```bash
-cd chapter1
-docker-compose up --build --force-recreate
+./start.sh
 ```
 
 This will start the 3-broker Kafka cluster.
 
 To stop and clean up:
 ```bash
-docker rm -f $(docker ps -aq --filter "name=kafka-")
+./stop.sh
 ```
 
 ## Instructions
