@@ -58,12 +58,28 @@ Shipping Service consumes → Delivers to customer
 
 ---
 
+## Usage
+
+From the `chapter2` directory, run:
+
+```bash
+./start.sh
+```
+
+This will start the 3-broker Kafka cluster plus Schema Registry (needed for Avro exercises).
+
+To stop and clean up:
+```bash
+./stop.sh
+```
+
+---
+
 ## Prerequisites
 
 - Completed Chapter 1 (Kafka Fundamentals)
 - Java 11+ or Python 3.8+ installed
 - Maven or Gradle (for Java) or pip (for Python)
-- Running 3-broker Kafka cluster (use `common/docker-compose.yml`)
 
 ---
 
