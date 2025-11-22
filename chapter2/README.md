@@ -2,7 +2,7 @@
 
 ## Summary
 
-**Goal:** Build robust Kafka producers and consumers that handle real-world scenarios including error handling, retries, serialization, monitoring, and graceful shutdown patterns.
+**Goal:** Build robust Kafka producers and consumers that handle real-world scenarios including error handling, retries, serialization, and graceful shutdown patterns.
 
 **Use Case:** You'll implement an e-commerce order processing pipeline that simulates realistic message flows:
 - **Orders Topic**: New customer orders with order details, items, and totals
@@ -18,9 +18,8 @@ This mirrors real production systems where orders flow through multiple stages (
 - Replace auto-commit with manual offset management for precise control
 - Build multi-stage processing: consumers that read from one topic and produce to another
 - Implement graceful shutdown handling and proper resource cleanup
-- Add structured logging, correlation IDs, and monitoring to track message flow
 
-**Learn:** Kafka client APIs (Java and Python), serialization formats (JSON, Avro, Protobuf), producer durability vs throughput trade-offs, consumer commit semantics (auto vs manual), idempotent producers, transactional producers, error handling patterns, retry strategies, dead letter queues, application lifecycle management, structured logging, distributed tracing concepts.
+**Learn:** Kafka client APIs (Java and Python), serialization formats (JSON, Avro, Protobuf), producer durability vs throughput trade-offs, consumer commit semantics (auto vs manual), idempotent producers, transactional producers, error handling patterns, retry strategies, dead letter queues, application lifecycle management.
 
 ---
 
@@ -366,53 +365,6 @@ chapter2/
 
 ---
 
-### Part 5: Monitoring and Observability
-
-#### Exercise 13: Add Structured Logging
-
-**Objective:** Implement comprehensive logging for debugging and monitoring.
-
-**Tasks:**
-- Use structured logging format (JSON)
-- Include: timestamp, correlation_id, order_id, event_type, status
-- Log key events: message received, processing started, processing completed, error occurred
-- Add execution time metrics
-- Use log levels appropriately (INFO, WARN, ERROR)
-
-**Key concepts:** Structured logging, correlation IDs, observability
-
----
-
-#### Exercise 14: Track Consumer Lag
-
-**Objective:** Monitor how far behind consumers are.
-
-**Tasks:**
-- Use `kafka-consumer-groups` CLI to check lag
-- Simulate backlog: produce 1000 orders, slow down consumer
-- Monitor lag per partition
-- Set up alerts for lag > threshold (e.g., 100 messages)
-- Implement lag tracking in application code using consumer metrics
-
-**Key concepts:** Consumer lag, monitoring, performance metrics
-
----
-
-#### Exercise 15: End-to-End Latency Tracking
-
-**Objective:** Measure how long orders take to flow through the pipeline.
-
-**Tasks:**
-- Add timestamp to each message at production
-- Calculate processing latency at each stage
-- Track end-to-end latency: order created → shipment dispatched
-- Identify bottlenecks (which stage is slowest?)
-- Set up percentile metrics (p50, p95, p99)
-- Visualize latency distribution
-
-**Key concepts:** Latency tracking, performance profiling, distributed tracing
-
----
 
 ## Verification
 
@@ -424,8 +376,6 @@ You've successfully completed Chapter 2 when you can:
 - ✅ Use Avro with Schema Registry for serialization
 - ✅ Handle schema evolution without breaking compatibility
 - ✅ Implement graceful shutdown and resource cleanup
-- ✅ Add structured logging and monitoring
-- ✅ Track and optimize consumer lag and end-to-end latency
 - ✅ Explain the trade-offs between throughput, latency, and durability
 
 ---
