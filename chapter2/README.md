@@ -130,7 +130,7 @@ chapter2/
 
 Try completing the instructions below before viewing the solution section to maximize learning.
 
-6> **Note:** Your Kafka cluster has 3 brokers running on ports 9092, 9094, and 9096, plus Schema Registry on port 8081. You can connect to any broker via `--bootstrap-server localhost:9092` (or 9094, 9096).
+**Note:** Your Kafka cluster has 3 brokers running on ports 9092, 9094, and 9096, plus Schema Registry on port 8081. You can connect to any broker via `--bootstrap-server localhost:9092` (or 9094, 9096).
 
 ### Part 1: Setting Up Topics and Basic Producers
 
