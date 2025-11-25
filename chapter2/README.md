@@ -128,29 +128,23 @@ chapter2/
 
 ## Instructions
 
+Try completing the instructions below before viewing the solution section to maximize learning.
+
+6> **Note:** Your Kafka cluster has 3 brokers running on ports 9092, 9094, and 9096, plus Schema Registry on port 8081. You can connect to any broker via `--bootstrap-server localhost:9092` (or 9094, 9096).
+
 ### Part 1: Setting Up Topics and Basic Producers
 
-#### Exercise 1: Create Topics for the Order Pipeline
-
-**Objective:** Set up the three core topics with appropriate configurations.
-
-**Tasks:**
-- Create `orders` topic with 3 partitions, replication factor 3
-- Create `payments` topic with 3 partitions, replication factor 3
-- Create `shipments` topic with 3 partitions, replication factor 3
-- Set retention to 7 days for all topics
-- Configure `min.insync.replicas=2` for durability
-
-**Commands:** 
-```bash
-# TODO: Add topic creation commands
-```
+1. **Create Topics for the Order Pipeline** to set up the three core topics with appropriate configurations.
+   - Create `orders` topic with 3 partitions, replication factor 3
+   - Create `payments` topic with 3 partitions, replication factor 3
+   - Create `shipments` topic with 3 partitions, replication factor 3
+   - Set retention to 7 days for all topics using the `--config retention.ms` flag
+   - Configure `min.insync.replicas=2` for durability using the `--config` flag
+   - Verify all topics were created successfully with `kafka-topics --list`
 
 ---
 
-#### Exercise 2: Build a Simple Order Producer (Java or Python)
-
-**Objective:** Create a basic producer that generates random order events.
+2. **Build a Simple Order Producer** (Java or Python) that generates random order events.
 
 **Order Message Structure (JSON):**
 ```json
@@ -167,117 +161,85 @@ chapter2/
 }
 ```
 
-**Tasks:**
-- Use `order_id` as the message key to ensure ordering per order
-- Generate random orders with 1-5 items
-- Use basic producer configuration (default settings)
-- Send 10 orders and verify they're in the topic
-
-**Key concepts:** Basic producer API, message keys, JSON serialization
-
----
-
-#### Exercise 3: Configure Producer for Reliability
-
-**Objective:** Enhance the producer with production-grade reliability settings.
-
-**Tasks:**
-- Set `acks=all` to ensure all ISR replicas acknowledge
-- Enable `enable.idempotence=true` to prevent duplicates
-- Configure `retries` and `retry.backoff.ms`
-- Set `max.in.flight.requests.per.connection=5`
-- Add callback handlers to log success/failure
-- Test by producing 100 orders and monitoring for errors
-
-**Key concepts:** Producer acknowledgments, idempotence, retries, callbacks
+   - Use `order_id` as the message key to ensure ordering per order
+   - Generate random orders with 1-5 items per order
+   - Use basic producer configuration with default settings
+   - Send 10 orders to the `orders` topic
+   - Verify messages are in the topic using `kafka-console-consumer`
+   - Research how to serialize Java/Python objects to JSON
 
 ---
 
-#### Exercise 4: Optimize Producer Performance
+3. **Configure Producer for Reliability** to enhance your producer with production-grade settings.
+   - Set `acks=all` to ensure all ISR replicas acknowledge writes
+   - Enable `enable.idempotence=true` to prevent duplicate messages
+   - Configure `retries` (try a high value like 10) and `retry.backoff.ms` (try 100ms)
+   - Set `max.in.flight.requests.per.connection=5` for optimal idempotent producer performance
+   - Add callback handlers to log success/failure for each message sent
+   - Test by producing 100 orders and verify no errors occur
+   - Research what happens when a broker goes down during message production
 
-**Objective:** Tune batching and compression for higher throughput.
+---
 
-**Tasks:**
-- Configure `batch.size` (default 16KB, try 32KB)
-- Set `linger.ms` to allow batching (try 10ms, 100ms)
-- Enable compression: test `gzip`, `snappy`, `lz4`, `zstd`
-- Measure throughput: orders/second and MB/second
-- Compare trade-offs: latency vs throughput
-
-**Key concepts:** Batching, compression algorithms, throughput optimization
+4. **Optimize Producer Performance** by tuning batching and compression for higher throughput.
+   - Configure `batch.size` - start with default 16KB, then try 32KB and 64KB
+   - Set `linger.ms` to allow batching - try 0ms (default), 10ms, and 100ms
+   - Enable compression and test different algorithms: `gzip`, `snappy`, `lz4`, `zstd`
+   - Measure throughput by producing 1000 orders and recording orders/second and MB/second
+   - Compare trade-offs: observe how `linger.ms` affects latency vs throughput
+   - Research which compression algorithm gives the best balance of speed and compression ratio
 
 ---
 
 ### Part 2: Building Robust Consumers
 
-#### Exercise 5: Build a Simple Order Consumer
-
-**Objective:** Create a basic consumer that reads and logs orders.
-
-**Tasks:**
-- Use consumer group `order-processors`
-- Subscribe to `orders` topic
-- Deserialize JSON messages
-- Log each order (order_id, customer_id, total_amount)
-- Use auto-commit (default settings)
-- Run multiple instances to observe partition assignment
-
-**Key concepts:** Basic consumer API, consumer groups, auto-commit
+5. **Build a Simple Order Consumer** that reads and logs orders from the topic.
+   - Use consumer group `order-processors` to enable parallel processing
+   - Subscribe to the `orders` topic
+   - Deserialize JSON messages back to Order objects
+   - Log each order showing order_id, customer_id, and total_amount
+   - Use auto-commit with default settings (`enable.auto.commit=true`)
+   - Run multiple instances (2-3) and observe how partitions are assigned
+   - Research how consumer groups enable scaling and fault tolerance
 
 ---
 
-#### Exercise 6: Implement Manual Offset Management
-
-**Objective:** Replace auto-commit with manual offset commits for precise control.
-
-**Tasks:**
-- Disable auto-commit: `enable.auto.commit=false`
-- Process messages in batches
-- Commit offsets after successful processing
-- Handle commit failures with retry logic
-- Test by killing consumer mid-processing and verifying no message loss
-
-**Key concepts:** Manual commits, at-least-once delivery, offset management
+6. **Implement Manual Offset Management** to replace auto-commit with precise control over when offsets are committed.
+   - Disable auto-commit by setting `enable.auto.commit=false`
+   - Process messages in batches (e.g., 10 messages at a time)
+   - Commit offsets manually after successfully processing each batch
+   - Handle commit failures with retry logic (catch `CommitFailedException`)
+   - Test by killing the consumer mid-processing and restarting it
+   - Verify no message loss occurs and no duplicates are processed
+   - Research the difference between `commitSync()` and `commitAsync()`
 
 ---
 
-#### Exercise 7: Add Error Handling and Retry Logic
-
-**Objective:** Handle transient and permanent failures gracefully.
-
-**Tasks:**
-- Wrap message processing in try-catch
-- Implement exponential backoff for transient errors (network timeouts)
-- Create `orders-dlq` (dead letter queue) topic for poison pills
-- Send permanently failed messages to DLQ with error metadata
-- Add structured logging with correlation IDs
-- Simulate failures: throw exceptions for specific order IDs
-
-**Key concepts:** Error handling, retry strategies, dead letter queues, poison pill messages
+7. **Add Error Handling and Retry Logic** to handle transient and permanent failures gracefully.
+   - Wrap message processing logic in try-catch blocks
+   - Implement exponential backoff for transient errors (e.g., network timeouts, temporary database issues)
+   - Create an `orders-dlq` (dead letter queue) topic for poison pill messages
+   - Send permanently failed messages to the DLQ with error metadata (original message, error reason, timestamp)
+   - Add structured logging with correlation IDs to track messages across processing stages
+   - Simulate failures by throwing exceptions for specific order IDs (e.g., orders with ID containing "ERROR")
+   - Research the difference between transient vs permanent errors and appropriate handling strategies
 
 ---
 
-#### Exercise 8: Implement Graceful Shutdown
-
-**Objective:** Handle application termination properly.
-
-**Tasks:**
-- Register shutdown hooks (Java) or signal handlers (Python)
-- Stop consuming new messages on SIGTERM
-- Finish processing current batch
-- Commit final offsets
-- Close consumer properly
-- Test with `docker stop` and verify clean shutdown in logs
-
-**Key concepts:** Graceful shutdown, resource cleanup, signal handling
+8. **Implement Graceful Shutdown** to handle application termination properly without losing data.
+   - Register shutdown hooks (Java: `Runtime.addShutdownHook()`) or signal handlers (Python: `signal.signal()`)
+   - Stop consuming new messages when receiving SIGTERM or SIGINT
+   - Finish processing the current batch of messages before shutting down
+   - Commit final offsets to ensure progress is saved
+   - Close the consumer properly to trigger partition rebalancing
+   - Test with `docker stop` (SIGTERM) and verify clean shutdown in logs
+   - Research the difference between SIGTERM and SIGKILL and why graceful shutdown matters
 
 ---
 
 ### Part 3: Multi-Stage Processing Pipeline
 
-#### Exercise 9: Build Payment Processor (Consumer + Producer)
-
-**Objective:** Create a service that consumes orders and produces payment events.
+9. **Build Payment Processor** that acts as both a consumer and producer (Consumer + Producer pattern).
 
 **Payment Message Structure:**
 ```json
@@ -292,21 +254,17 @@ chapter2/
 }
 ```
 
-**Tasks:**
-- Consume from `orders` topic
-- Simulate payment processing (90% success, 10% failure)
-- Produce payment result to `payments` topic
-- Use transactional producer-consumer pattern for exactly-once semantics
-- Key payment messages by `order_id`
-- Commit consumer offset only after payment event is produced
-
-**Key concepts:** Producer-consumer chains, transactional processing, exactly-once semantics
+   - Consume messages from the `orders` topic using consumer group `payment-processors`
+   - Simulate payment processing (90% success rate, 10% failure - random)
+   - Produce payment results to the `payments` topic
+   - Use the transactional producer-consumer pattern for exactly-once semantics
+   - Key payment messages by `order_id` to maintain ordering with original orders
+   - Commit consumer offset only after the payment event is successfully produced
+   - Research how Kafka transactions provide exactly-once processing guarantees
 
 ---
 
-#### Exercise 10: Build Shipment Processor
-
-**Objective:** Create a service that consumes payments and produces shipment events.
+10. **Build Shipment Processor** that consumes payment events and produces shipment events.
 
 **Shipment Message Structure:**
 ```json
@@ -321,47 +279,37 @@ chapter2/
 }
 ```
 
-**Tasks:**
-- Consume from `payments` topic, filter for `status=AUTHORIZED`
-- Simulate shipment creation (assign carrier, generate tracking number)
-- Produce shipment event to `shipments` topic
-- Handle failures: payment declined, out of stock
-- Add end-to-end correlation ID tracking across all three topics
-
-**Key concepts:** Event filtering, stateful processing, correlation IDs
+   - Consume messages from the `payments` topic using consumer group `shipment-processors`
+   - Filter for messages with `status=AUTHORIZED` (ignore declined payments)
+   - Simulate shipment creation by assigning a random carrier (FedEx, UPS, DHL) and generating tracking numbers
+   - Produce shipment events to the `shipments` topic
+   - Handle failures such as payment declined or out of stock scenarios
+   - Add end-to-end correlation ID tracking across all three topics (orders → payments → shipments)
+   - Research how event filtering and stateful processing work in stream processing
 
 ---
 
 ### Part 4: Schema Evolution and Serialization
 
-#### Exercise 11: Migrate from JSON to Avro
-
-**Objective:** Use Avro for schema evolution and better performance.
-
-**Tasks:**
-- Set up Schema Registry (Docker container)
-- Define Avro schemas for Order, Payment, Shipment
-- Refactor producers to use AvroSerializer
-- Refactor consumers to use AvroDeserializer
-- Test backward compatibility: add optional field to schema
-- Measure serialization size: JSON vs Avro
-
-**Key concepts:** Schema Registry, Avro serialization, schema evolution, backward compatibility
+11. **Migrate from JSON to Avro** to use schema-based serialization for better performance and evolution.
+   - Verify Schema Registry is running on `http://localhost:8081` (started by `./start.sh`)
+   - Define Avro schemas for Order, Payment, and Shipment models (`.avsc` files)
+   - Refactor producers to use `KafkaAvroSerializer` (Confluent) or equivalent library
+   - Refactor consumers to use `KafkaAvroDeserializer` to automatically fetch schemas
+   - Test backward compatibility by adding an optional field to a schema
+   - Measure serialization size by comparing JSON vs Avro message sizes in Kafka
+   - Research why Avro is more efficient than JSON for high-throughput systems
 
 ---
 
-#### Exercise 12: Handle Schema Evolution
-
-**Objective:** Safely evolve schemas without breaking consumers.
-
-**Tasks:**
-- Add new field `discount_code` to Order schema (optional)
-- Deploy new producer version that includes discount codes
-- Verify old consumers still work (backward compatibility)
-- Update consumers to handle new field
-- Test forward compatibility: old producer, new consumer
-
-**Key concepts:** Schema compatibility modes (backward, forward, full), schema versioning
+12. **Handle Schema Evolution** to safely evolve schemas without breaking existing consumers.
+   - Add a new optional field `discount_code` (string, nullable) to the Order Avro schema
+   - Deploy a new producer version that includes discount codes in 50% of orders
+   - Verify old consumers (without the discount_code field) still work (backward compatibility)
+   - Update consumers to handle and log the new `discount_code` field
+   - Test forward compatibility: run old producer with new consumer and verify it works
+   - Experiment with Schema Registry compatibility modes: BACKWARD, FORWARD, FULL, NONE
+   - Research when to use each compatibility mode and the trade-offs involved
 
 ---
 
